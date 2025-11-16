@@ -136,8 +136,9 @@ def transform_post(post: PostEntity) -> tuple[PostProcessed, int, int, int]: # t
 
         
 
-def get_nearest_price(target_time: int, ticker_data: pd.DataFrame):
+def get_nearest_price(target_time: int, ticker_data):
     if target_time < ticker_data.index[0]:
+            print("000000000000000000")
             return None
     nearest_idx = ticker_data.index.get_indexer([target_time], method='ffill')[0]
     return ticker_data.iloc[nearest_idx]['Close']

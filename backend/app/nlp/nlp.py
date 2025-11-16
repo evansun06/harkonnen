@@ -21,7 +21,7 @@ def truth_social_pipeline(username:str, limit: int) -> PostProcessed:
     except Exception as e:
         raise HarkonnenException(
             500,
-            ErrorCodes.SCRAPER_FAIL,
+            str(ErrorCodes.SCRAPER_FAIL),
             f"Truth Social scraping failed for {username}",
             {"platform": "truth_social", "username": username, "error": str(e)}
         )
@@ -37,7 +37,7 @@ def truth_social_pipeline(username:str, limit: int) -> PostProcessed:
     except Exception as e:
         raise HarkonnenException(
             500,
-            ErrorCodes.SENTIMENT_FAIL,
+            str(ErrorCodes.SENTIMENT_FAIL),
             f"Sentiment analysis failed for {username}",
             {"platform": "truth_social", "username": username, "error": str(e)}
         )
@@ -51,7 +51,7 @@ def truth_social_pipeline(username:str, limit: int) -> PostProcessed:
     except Exception as e:
         raise HarkonnenException(
             500,
-            ErrorCodes.ENTITY_FAIL,
+            str(ErrorCodes.ENTITY_FAIL),
             f"Entity retrieval failed for {username}",
             {"platform": "truth_social", "username": username, "error": str(e)}
         )
@@ -62,7 +62,7 @@ def truth_social_pipeline(username:str, limit: int) -> PostProcessed:
     except Exception as e:
         raise HarkonnenException(
             500,
-            ErrorCodes.FINANCE_FAIL,
+            str(ErrorCodes.FINANCE_FAIL),
             f"Financial Analysis Failed for  {username}",
             {"platform": "truth_social", "username": username, "error": str(e)}
         )
@@ -71,16 +71,16 @@ def truth_social_pipeline(username:str, limit: int) -> PostProcessed:
     
     
 
-def x_pipeline(username:str, time: TimeFrame) -> PostProcessed:
+def x_pipeline(username:str, limit:int) -> PostProcessed:
     """main pipeline using scraped x data"""
 
     # 1. Fetch Post Data
     try:
-        raw_posts:list[RawPost] = get_tweets("sama", 200)   ### TODO: Wait for Andrew X Scraper Functions
+        raw_posts:list[RawPost] = get_tweets("sama", limit)   ### TODO: Wait for Andrew X Scraper Functions
     except Exception as e:
         raise HarkonnenException(
             500,
-            ErrorCodes.SCRAPER_FAIL,
+            str(ErrorCodes.SCRAPER_FAIL),
             f"Truth Social scraping failed for {username}",
             {"platform": "X", "username": username, "error": str(e)}
         )
@@ -91,18 +91,18 @@ def x_pipeline(username:str, time: TimeFrame) -> PostProcessed:
     except Exception as e:
         raise HarkonnenException(
             500,
-            ErrorCodes.SENTIMENT_FAIL,
+            str(ErrorCodes.SENTIMENT_FAIL),
             f"Sentiment analysis failed for {username}",
             {"platform": "X", "username": username, "error": str(e)}
         )
     
     # 3. Perform entity retrieval
     try:
-        entity_posts:list[PostEntity] = build_all(entity_posts)
+        entity_posts:list[PostEntity] = build_all(sentiment_posts)
     except Exception as e:
         raise HarkonnenException(
             500,
-            ErrorCodes.ENTITY_FAIL,
+            str(ErrorCodes.ENTITY_FAIL),
             f"Entity retrieval failed for {username}",
             {"platform": "X", "username": username, "error": str(e)}
         )
@@ -113,7 +113,7 @@ def x_pipeline(username:str, time: TimeFrame) -> PostProcessed:
     except Exception as e:
         raise HarkonnenException(
             500,
-            ErrorCodes.RAG_FAIL,
+            str(ErrorCodes.RAG_FAIL),
             f"Entity retrieval augmented generation failed for {username}",
             {"platform": "X", "username": username, "error": str(e)}
         )
@@ -124,7 +124,7 @@ def x_pipeline(username:str, time: TimeFrame) -> PostProcessed:
     except Exception as e:
         raise HarkonnenException(
             500,
-            ErrorCodes.FINANCE_FAIL,
+            str(ErrorCodes.FINANCE_FAIL),
             f"Financial Analysis Failed for  {username}",
             {"platform": "X", "username": username, "error": str(e)}
         )
