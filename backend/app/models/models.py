@@ -45,6 +45,9 @@ class PriceChanges(BaseModel):
 
 
 class PostProcessed(PostEntity):
+    price_changes: List[PriceChanges]
+
+class FrontEndReady(BaseModel):
     one_day_influence_score: float
     seven_day_influence_score: float
-    price_changes: List[PriceChanges]
+    posts: List[PostProcessed]
