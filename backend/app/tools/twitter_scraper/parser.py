@@ -36,6 +36,7 @@ RE_SPAN_END_END = r"</span><a"
 RE_MENTION_START = "<div"
 RE_MENTION_HEADER = r'style="([^"]*)">'
 RE_MENTION_END = r"</a>"
+RE_HASHTAG_START = r"</span><span"
 RE_DIV = r"</div>"
 
 # returns a dictionary with the nested keys listed above
@@ -134,7 +135,8 @@ try:
                         reading = False
                         continue
 
-                    if line.strip() == RE_MENTION_START:
+                    if line.strip() == RE_MENTION_START or re.search(RE_HASHTAG_START, line):
+                        #print(line)
                         skipping_mention = True
                         mention_found = False
                     elif not re.search(RE_DIV, line) and line_num >= start_point:
@@ -149,11 +151,12 @@ try:
                 else: # THE PARSER IS CURRENTLY SKIPPING OVER AN EMOJI/MENTION
                     if skipping_mention:
                         mention = re.search(RE_MENTION_HEADER, line) 
+                        end = re.search(RE_MENTION_END, line)
                         if mention:
-                            end = re.search(RE_MENTION_END, line)
+                            mention_found = True
+                        if mention and end:
                             curr_content += line[mention.end():end.start()] + " " # append the mention to the message
                             #print(line[mention.end():end.start()])
-                            mention_found = True
                     if mention_found and re.search(RE_SPAN_START, line): 
                         start_point = line_num + 1
                         skipping_emoji = False
