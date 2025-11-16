@@ -38,7 +38,7 @@ export default function PersonPage() {
       }
       
       // Build the URL with the correct username
-      const url = `http://127.0.0.1:8000/harkonnen/master/process/x/${username}?timeframe=lm&limit=100`;
+      const url = `http://127.0.0.1:8000/harkonnen/master/process/x/${username}?timeframe=lm&limit=200`;
       console.log('Fetching from:', url);
       
       const response = await fetch(url);
