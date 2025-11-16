@@ -5,4 +5,5 @@ class ErrorCodes(enum.Enum):
     SENTIMENT_FAIL = "NLP-01"
     ENTITY_FAIL = "NLP-ENTITY-01"
     FINANCE_FAIL = "FINANCE-01"
+    RAG_FAIL = "RAG-01"
     PIPELINE_FAIL = "PIPELINE-01"

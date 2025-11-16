@@ -7,6 +7,8 @@ from app.models.models import *
 from app.nlp.truth_social import get_posts
 from app.nlp.sentiment import get_sentiment_batch
 from app.nlp.finance_processing import process_posts
+from app.tools.twitter_scraper.interpreter import get_tweets
+from app.nlp.semantic_search import append_rag_results
 from app.nlp import ErrorCodes
 from app.nlp.fuzzy import build_all
 
@@ -69,7 +71,7 @@ def x_pipeline(username:str, time: TimeFrame) -> PostProcessed:
 
     # 1. Fetch Post Data
     try:
-        raw_posts:list[RawPost] = ...   ### TODO: Wait for Andrew X Scraper Functions
+        raw_posts:list[RawPost] = get_tweets("sama", 200)   ### TODO: Wait for Andrew X Scraper Functions
     except Exception as e:
         raise HarkonnenException(
             500,
@@ -91,7 +93,7 @@ def x_pipeline(username:str, time: TimeFrame) -> PostProcessed:
     
     # 3. Perform entity retrieval
     try:
-        entity_posts:list[PostEntity] = any # TODO: Change Once Completed
+        entity_posts:list[PostEntity] = build_all(entity_posts)
     except Exception as e:
         raise HarkonnenException(
             500,
@@ -100,9 +102,20 @@ def x_pipeline(username:str, time: TimeFrame) -> PostProcessed:
             {"platform": "X", "username": username, "error": str(e)}
         )
     
-    # 4. Perform Financial analysis
+    # 4. RAG Query
     try:
-        post_processed:FrontEndReady = process_posts(entity_posts)
+        entity_post_plus_rag:list[PostEntity] = append_rag_results(entity_posts, 3)
+    except Exception as e:
+        raise HarkonnenException(
+            500,
+            ErrorCodes.RAG_FAIL,
+            f"Entity retrieval augmented generation failed for {username}",
+            {"platform": "X", "username": username, "error": str(e)}
+        )
+    
+    # 5. Perform Financial analysis
+    try:
+        post_processed:FrontEndReady = process_posts(entity_post_plus_rag)
     except Exception as e:
         raise HarkonnenException(
             500,
