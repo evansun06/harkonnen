@@ -35,3 +35,5 @@ def get_tweets(user_handle:str, days:int) -> list[RawPost]:
         username = posts[post_id][KEY_AUTHOR]
         out.append(RawPost(post_id=post_id, timestamp=timestamp, username=username, content=content))
     return out
+
+print (get_tweets("foxnews", 10))
