@@ -18,8 +18,8 @@ def process_batch_ts(influencer:str, limit: int = Query(20, ge=1, le=500)):
 
 
 @sub_router.get("/process/x/{influencer}", response_model= FrontEndReady)
-def process_batch_x(influencer:str, timeframe:TimeFrame = TimeFrame.ONE_MONTH, limit: int = Query(20, ge=1, le=200)):
+def process_batch_x(influencer:str, limit: int = Query(20, ge=1, le=200)):
     """process a batch of influencer, with a given limit and timeframe for X"""
     # TODO: X PIPELINE IMPLEMENTATION
-    return x_pipeline(str)
+    return x_pipeline(influencer, limit)
     

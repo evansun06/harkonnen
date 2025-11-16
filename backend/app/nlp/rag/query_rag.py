@@ -7,20 +7,17 @@ import sqlite3
 
 class RagStore:
     def __init__(self, base_dir: Path | None = None):
-        # allow automatic path detection if user doesn't pass base_dir
-        if base_dir is None:
-            base_dir = Path(__file__).resolve().parent
+         # Always load RAG files from this directory
+        self.base = Path(__file__).resolve().parent
 
-        self.base = base_dir
-        
         # Load FAISS index
         self.index = faiss.read_index(str(self.base / "ticker_vectors.faiss"))
 
         # Load embedding model
         self.model = SentenceTransformer("all-MiniLM-L6-v2")
 
-        # Open SQLite
-        self.conn = sqlite3.connect(self.base / "companies.sqlite")
+        # Load SQLite metadata
+        self.conn = sqlite3.connect(str(self.base / "companies.sqlite"))
         self.cursor = self.conn.cursor()
 
 
@@ -53,7 +50,7 @@ class RagStore:
         return results
 
 if __name__ == "__main__":
-    rag = RagStore(Path(__file__).resolve().parent)
+    rag = RagStore()
 
     results = rag.search("US exports are deteriorating amid China's tariffs on American Exports", k=5)
     for r in results:

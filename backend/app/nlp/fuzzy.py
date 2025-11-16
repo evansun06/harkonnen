@@ -76,6 +76,7 @@ def build_all(everything):
     for thing in everything:
         thingy = ticker_builder(thing)
         list_of_entities.append(thingy)
+        
     return list_of_entities
 
 if __name__ == "__main__":
