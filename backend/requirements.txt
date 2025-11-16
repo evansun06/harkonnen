@@ -9,6 +9,7 @@ torch
 pandas
 numpy
 python-dotenv
+scipy
 
 ### Models
 pydantic
