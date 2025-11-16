@@ -10,6 +10,7 @@ pandas
 numpy
 python-dotenv
 scipy
+truthbrush
 
 ### Models
 pydantic
