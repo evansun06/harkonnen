@@ -1,33 +1,107 @@
 import { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 
-export default function HarkonnenHome() {
+export default function App() {
   const [searchValue, setSearchValue] = useState('');
   const [opacity, setOpacity] = useState(1);
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // List of influential politicians and individuals
+  const influentialPeople = [
+    'Donald Trump',
+    'Elon Musk',
+    'Joe Biden',
+    'Kamala Harris',
+    'Barack Obama',
+    'Vladimir Putin',
+    'Xi Jinping',
+    'Jeff Bezos',
+    'Bill Gates',
+    'Mark Zuckerberg',
+    'Warren Buffett',
+    'Bernie Sanders',
+    'Ron DeSantis',
+    'Nancy Pelosi',
+    'Mitch McConnell',
+    'Alexandria Ocasio-Cortez',
+    'Mike Pence',
+    'Nikki Haley',
+    'Vivek Ramaswamy',
+    'Robert F. Kennedy Jr.',
+    'Tim Cook',
+    'Sundar Pichai',
+    'Sam Altman',
+    'Larry Page',
+    'Sergey Brin',
+    'Peter Thiel',
+    'Marc Andreessen',
+    'Reid Hoffman',
+    'Jack Dorsey',
+    'Brian Armstrong'
+  ];
 
   useEffect(() => {
-    let direction = -1; // -1 for fading out, 1 for fading in
-    
-    const interval = setInterval(() => {
-      setOpacity(prev => {
-        const newOpacity = prev + (direction * 0.02);
-        
-        // Switch direction at boundaries
-        if (newOpacity <= 0.3) {
-          direction = 1;
-          return 0.3;
-        }
-        if (newOpacity >= 1) {
-          direction = -1;
-          return 1;
-        }
-        
-        return newOpacity;
-      });
-    }, 50);
-    
-    return () => clearInterval(interval);
-  }, []);
+  // Only fade if search bar is empty
+  if (searchValue.trim() !== '') {
+    setOpacity(1);
+    return;
+  }
+
+  let direction = -1;
+  
+  const interval = setInterval(() => {
+    setOpacity(prev => {
+      const newOpacity = prev + (direction * 0.02);
+      
+      if (newOpacity <= 0.3) {
+        direction = 1;
+        return 0.3;
+      }
+      if (newOpacity >= 1) {
+        direction = -1;
+        return 1;
+      }
+      
+      return newOpacity;
+    });
+  }, 50);
+
+  return () => clearInterval(interval);
+}, [searchValue]); 
+
+  // Filter suggestions based on search input
+  useEffect(() => {
+    if (searchValue.trim() === '') {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    const filtered = influentialPeople.filter(person =>
+      person.toLowerCase().includes(searchValue.toLowerCase())
+    ).slice(0, 6); // Limit to 6 suggestions
+
+    setSuggestions(filtered);
+    setShowSuggestions(filtered.length > 0);
+  }, [searchValue]);
+
+  const handleSuggestionClick = (person) => {
+    setSearchValue(person);
+    setShowSuggestions(false);
+    // Navigate to person's page
+    const urlName = person.toLowerCase().replace(/\s+/g, '-');
+    window.location.href = `/person/${urlName}`;
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && searchValue.trim()) {
+      setShowSuggestions(false);
+      // Navigate to person's page
+      const urlName = searchValue.toLowerCase().replace(/\s+/g, '-');
+      window.location.href = `/person/${urlName}`;
+    }
+  };
 
   const styles = {
     container: {
@@ -126,42 +200,102 @@ export default function HarkonnenHome() {
       width: '1px',
       background: 'linear-gradient(to bottom, transparent, #6b7280, transparent)',
       marginRight: '1rem'
+    },
+    suggestionsBox: {
+      position: 'absolute',
+      top: 'calc(100% + 0.5rem)',
+      left: 0,
+      right: 0,
+      background: 'linear-gradient(to bottom, #27272a, #1c1c1e)',
+      border: '1px solid #52525b',
+      borderRadius: '0.75rem',
+      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+      overflow: 'hidden',
+      zIndex: 50
+    },
+    suggestion: {
+      padding: '1rem 1.5rem',
+      color: '#e5e7eb',
+      cursor: 'pointer',
+      transition: 'background 0.2s',
+      fontFamily: 'Orbitron, monospace',
+      fontSize: '0.95rem',
+      borderBottom: '1px solid #3f3f46'
     }
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.backgroundPattern} />
+    <>
+      <style>{`
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        body {
+          margin: 0;
+          padding: 0;
+          overflow-x: hidden;
+        }
+        #root {
+          margin: 0;
+          padding: 0;
+        }
+      `}</style>
+      
+      <div style={styles.container}>
+        <div style={styles.backgroundPattern} />
 
-      <div style={styles.content}>
-        <h1 style={styles.title}>
-          HARKONNEN
-        </h1>
+        <div style={styles.content}>
+          <h1 style={styles.title}>
+            HARKONNEN
+          </h1>
 
-        <div style={styles.searchContainer}>
-          <div style={styles.searchWrapper}>
-            <div style={styles.searchGlow} />
-            
-            <div style={styles.searchBox}>
-              <div style={styles.searchIcon}>
-                <Search size={24} />
-              </div>
+          <div style={styles.searchContainer}>
+            <div style={styles.searchWrapper}>
+              <div style={styles.searchGlow} />
               
-              <input
-                type="text"
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                placeholder="INITIALIZE SEARCH PROTOCOL..."
-                style={styles.input}
-              />
+              <div style={styles.searchBox}>
+                <div style={styles.searchIcon}>
+                  <Search size={24} />
+                </div>
+                
+                <input
+                  type="text"
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  onFocus={() => searchValue && setShowSuggestions(true)}
+                  placeholder="INITIALIZE SEARCH PROTOCOL..."
+                  style={styles.input}
+                  autoComplete="off"
+                />
 
-              <div style={styles.divider} />
+                <div style={styles.divider} />
+              </div>
+
+              {/* Suggestions dropdown */}
+              {showSuggestions && suggestions.length > 0 && (
+                <div style={styles.suggestionsBox}>
+                  {suggestions.map((person, index) => (
+                    <div
+                      key={index}
+                      style={styles.suggestion}
+                      onClick={() => handleSuggestionClick(person)}
+                      onMouseEnter={(e) => e.target.style.background = '#3f3f46'}
+                      onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                    >
+                      {person}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
-      </div>
 
-      <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Raleway:wght@200;300&display=swap" rel="stylesheet" />
-    </div>
+        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Raleway:wght@200;300&display=swap" rel="stylesheet" />
+      </div>
+    </>
   );
 }
